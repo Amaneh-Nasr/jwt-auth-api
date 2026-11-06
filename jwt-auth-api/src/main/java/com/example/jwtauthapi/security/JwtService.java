@@ -8,16 +8,17 @@ import com.example.jwtauthapi.security.JwtService;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import io.jsonwebtoken.io.Decoders;
+import org.springframework.beans.factory.annotation.Value;
 
 @Service
 public class JwtService {
 
-    private static final String SECRET =
-            "mySuperSecretKeyForJwtAuthentication123456789";
+    private final SecretKey key;
 
-    private final SecretKey key =
-            Keys.hmacShaKeyFor(SECRET.getBytes());
-
+    public JwtService(@Value("${jwt.secret}") String secret) {
+        this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+    }
     public String generateToken(String email) {
         return Jwts.builder()
                 .subject(email)
